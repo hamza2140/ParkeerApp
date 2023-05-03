@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'vehicles.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+//import 'vehicles.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -13,104 +21,83 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Login',
-      home: LoginPage(auth: _auth),
+      home: LoginPage(),
     );
   }
 }
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key, required this.auth}) : super(key: key);
-
-  final FirebaseAuth auth;
-
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String? _username;
-  String? _password;
-  String? _errorMessage;
-  bool _isLoginForm = true;
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
 
-  void _submit() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      try {
-        UserCredential userCredential;
-        if (_isLoginForm) {
-          userCredential = await widget.auth.signInWithEmailAndPassword(
-              email: _username!, password: _password!);
-        } else {
-          userCredential = await widget.auth.createUserWithEmailAndPassword(
-              email: _username!, password: _password!);
-        }
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MyCustomWidget()),
-        );
-      } on FirebaseAuthException catch (e) {
-        setState(() {
-          _errorMessage = 'Ongeldige gebruikersnaam of wachtwoord';
-        });
-      } catch (e) {
-        print(e);
-      }
-    }
-  }
-
-  void _toggleFormMode() {
-    setState(() {
-      _isLoginForm = !_isLoginForm;
-    });
-  }
+  String? _errorMessage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Gebruikersnaam'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Gebruikersnaam is verplicht' : null,
-                  onSaved: (value) => _username = value,
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    try {
+                      final user = await _auth.signInWithEmailAndPassword(
+                          email: _emailController.text.trim(),
+                          password: _passwordController.text.trim());
+
+// Navigate to the home screen after successful login
+                    } on FirebaseAuthException catch (e) {
+                      setState(() {
+                        _errorMessage = e.message;
+                      });
+                    }
+                  }
+                },
+                child: Text('Login'),
+              ),
+              if (_errorMessage != null)
+                Text(
+                  _errorMessage!,
+                  style: TextStyle(color: Colors.red),
                 ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Wachtwoord'),
-                  obscureText: true,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Wachtwoord is verplicht' : null,
-                  onSaved: (value) => _password = value,
-                ),
-                SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: _submit,
-                  child: Text(_isLoginForm ? 'Inloggen' : 'Registreren'),
-                ),
-                TextButton(
-                  onPressed: _toggleFormMode,
-                  child: Text(_isLoginForm
-                      ? 'Nog geen account? Registreer nu'
-                      : 'Heb je al een account? Log in'),
-                ),
-                if (_errorMessage != null)
-                  Text(
-                    _errorMessage!,
-                    style: TextStyle(color: Colors.red),
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
       ),
@@ -118,6 +105,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
+// open map form
 class MyCustomWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

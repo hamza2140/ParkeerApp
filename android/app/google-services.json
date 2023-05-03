@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "299123234077",
+    "project_id": "parkeerapp-d01e8",
+    "storage_bucket": "parkeerapp-d01e8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299123234077:android:da953121bfcfcafc343df4",
+        "android_client_info": {
+          "package_name": "com.example.project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299123234077-7v5mf4fahmhfpm76b09l10k261934ado.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeNJMpaSPM5xIvzqrcHYjQOGo8lL4AK54"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299123234077-7v5mf4fahmhfpm76b09l10k261934ado.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "299123234077-25t89fsc0b0bkvpf3i0fp91ha21bm0cj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.project"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

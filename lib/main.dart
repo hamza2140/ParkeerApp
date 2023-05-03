@@ -81,8 +81,12 @@ class _LoginPageState extends State<LoginPage> {
                       final user = await _auth.signInWithEmailAndPassword(
                           email: _emailController.text.trim(),
                           password: _passwordController.text.trim());
-
-// Navigate to the home screen after successful login
+                      // Navigate to the home screen after successful login
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyCustomWidget()),
+                      );
                     } on FirebaseAuthException catch (e) {
                       setState(() {
                         _errorMessage = e.message;
@@ -114,13 +118,6 @@ class MyCustomWidget extends StatelessWidget {
         center: LatLng(51.260197, 4.402771),
         zoom: 12,
       ),
-      nonRotatedChildren: [
-        AttributionWidget.defaultWidget(
-          source: 'OpenStreetMap contributors',
-          onSourceTapped: null,
-          sourceTextStyle: const TextStyle(fontSize: 2),
-        ),
-      ],
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -152,18 +149,6 @@ class MyCustomWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Marker(
-              point: LatLng(52.260197, 4.462771),
-              width: 50,
-              height: 50,
-              builder: (context) => Container(
-                child: Icon(
-                  Icons.location_on,
-                  color: Colors.black,
-                  size: 50.0,
-                ),
-              ),
-            )
           ],
         ),
       ],

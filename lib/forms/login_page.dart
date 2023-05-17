@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project/database_manager.dart';
-import 'package:project/map_homepage.dart';
+import 'package:project/loading_screen.dart';
+import 'package:project/vehicles.dart';
 import 'register_page.dart';
 
 //login form
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -16,6 +19,12 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
   String? _errorMessage;
+
+  void voegErrorMessage(String? message) {
+    setState(() {
+      _errorMessage = message;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,18 +44,18 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter your email';
+                    return 'Typ je email in';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Wachtwoord'),
                 obscureText: true,
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter your password';
+                    return 'Typ je wachtwoord in';
                   }
                   return null;
                 },
@@ -56,17 +65,17 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     try {
-                      DatabaseManager().Login(_emailController.text.trim(),
+                      await DatabaseManager().login(
+                          _emailController.text.trim(),
                           _passwordController.text.trim());
-                      // Navigate to the home screen after successful login
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => MapWidget()),
-                      );
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoadingScreen()));
+                      }
                     } on FirebaseAuthException catch (e) {
-                      setState(() {
-                        _errorMessage = e.message;
-                      });
+                      voegErrorMessage(e.message);
                     }
                   }
                 },
@@ -85,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                     MaterialPageRoute(builder: (context) => RegisterPage()),
                   );
                 },
-                child: const Text('Create Account'),
+                child: const Text('Account aanmaken'),
               ),
             ],
           ),

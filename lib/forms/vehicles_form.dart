@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/database_manager.dart';
+import 'package:project/vehicles.dart';
 
 class BrandModelForm extends StatefulWidget {
   @override
@@ -26,7 +27,7 @@ class _BrandModelFormState extends State<BrandModelForm> {
             children: [
               TextFormField(
                 decoration: const InputDecoration(
-                  labelText: 'Brand',
+                  labelText: 'Merk',
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -49,8 +50,12 @@ class _BrandModelFormState extends State<BrandModelForm> {
                 child: ElevatedButton(
                   onPressed: () {
                     DatabaseManager().addData(_brand, _model);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ShowVehicles()));
                   },
-                  child: const Text('Submit'),
+                  child: const Text('Voeg Toe'),
                 ),
               ),
             ],

@@ -6,21 +6,12 @@ class DatabaseManager {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<QuerySnapshot> getListUsers() async {
-    QuerySnapshot querySnapshot = await _firestore.collection('users').get();
-    return querySnapshot;
-  }
-
-  Future<QuerySnapshot> getVehiclesFromUser(String uid) async {
-    var documentReference =
-        FirebaseFirestore.instance.collection("users").doc(uid);
-    var subcollectionReference = documentReference.collection('vehicles ');
-    QuerySnapshot querySnapshot = await subcollectionReference.get();
-    return querySnapshot;
-  }
-
-  Future<void> Login(String _email, String _password) async {
+  Future<void> login(String _email, String _password) async {
     await _auth.signInWithEmailAndPassword(email: _email, password: _password);
+  }
+
+  Future<void> logout() async {
+    await _auth.signOut();
   }
 
   Future<void> addUser(String _email, String _password, String _name) async {
@@ -52,5 +43,22 @@ class DatabaseManager {
       'brand': brand,
       'model': model,
     });
+  }
+
+  Future<String> getUserName() async {
+    DocumentSnapshot snapshot = await _firestore
+        .collection('users')
+        .doc('${_auth.currentUser?.uid}')
+        .get();
+    return snapshot.get("name");
+  }
+
+  Future<void> deleteDoc(int index) async {
+    _firestore
+        .collection("users")
+        .doc("${_auth.currentUser?.uid}")
+        .collection("vehicles")
+        .doc("${index}")
+        .delete();
   }
 }

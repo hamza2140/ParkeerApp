@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project/database_manager.dart';
+import 'package:project/forms/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -30,7 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: const InputDecoration(labelText: 'Naam'),
                 validator: (value) {
                   if (value == "") {
-                    return 'Please enter your email';
+                    return 'Schrijf je naam';
                   }
                   return null;
                 },
@@ -44,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == "") {
-                    return 'Please enter your email';
+                    return 'Schijf je email';
                   }
                   return null;
                 },
@@ -59,7 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: const InputDecoration(labelText: 'Wachtwoord'),
                 validator: (value) {
                   if (value == "") {
-                    return 'Please enter your password';
+                    return 'Schrijf je wachtwoord';
                   }
                   return null;
                 },
@@ -87,8 +88,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _register() async {
     try {
-      DatabaseManager().addUser(_email, _password, _name);
-      _showSuccessAlert(context);
+      await DatabaseManager().addUser(_email, _password, _name);
+      if (context.mounted) _showSuccessAlert(context);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -111,8 +112,8 @@ class _RegisterPageState extends State<RegisterPage> {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginPage()));
               },
             ),
           ],

@@ -65,6 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     try {
+                      print("proberen in te loggen");
                       await DatabaseManager().login(
                           _emailController.text.trim(),
                           _passwordController.text.trim());

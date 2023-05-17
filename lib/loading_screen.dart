@@ -13,22 +13,28 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2));
-    if (auth.currentUser != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ShowVehicles()),
-      );
-    } else {
-      auth.authStateChanges().listen((User? user) async {
-        if (user != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const ShowVehicles()),
-          );
-        }
-      });
-    }
+    print("loading");
+    Future.delayed(const Duration(seconds: 2)).then((value) => {
+          if (auth.currentUser != null)
+            {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const ShowVehicles()),
+              )
+            }
+          else
+            {
+              auth.authStateChanges().listen((User? user) async {
+                if (user != null) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ShowVehicles()),
+                  );
+                }
+              })
+            }
+        });
   }
 
   @override

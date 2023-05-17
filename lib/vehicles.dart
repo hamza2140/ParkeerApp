@@ -21,7 +21,7 @@ class _ShowVehiclesState extends State<ShowVehicles> {
   @override
   void initState() {
     super.initState();
-
+    print("show vehicles");
     documentStream = FirebaseFirestore.instance
         .collection("users")
         .doc(FirebaseAuth.instance.currentUser?.uid)

@@ -11,16 +11,17 @@ class ReservationFormPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("ReserveringsFormulier"),
+        title: const Text("ReserveringsFormulier"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Straatnaam: ${getStreetName()}',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20.0),
             const Text(
@@ -38,7 +39,7 @@ class ReservationFormPage extends StatelessWidget {
               onPressed: () {
                 // Voeg hier de logica toe om de reservering te verwerken
               },
-              child: Text('Reserveer'),
+              child: const Text('Reserveer'),
             ),
           ],
         ),

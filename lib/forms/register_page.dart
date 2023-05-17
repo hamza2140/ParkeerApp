@@ -113,7 +113,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: const Text('OK'),
               onPressed: () {
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => LoginPage()));
+                    MaterialPageRoute(builder: (context) => const LoginPage()));
               },
             ),
           ],

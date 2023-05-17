@@ -5,14 +5,29 @@ import 'package:project/vehicles.dart';
 import 'forms/reservation_form.dart';
 import 'bottom_navbar.dart';
 
-List<LatLng> parkingSpots = [
-  LatLng(51.260197, 4.402771),
-  LatLng(51.280197, 4.422771),
-  LatLng(51.265197, 4.412771),
-  LatLng(51.275197, 4.402771),
-  LatLng(51.255197, 4.432771),
-  LatLng(51.290197, 4.402771),
-  LatLng(51.240197, 4.422771),
+class ParkingSpot {
+  LatLng position;
+  bool isReserved;
+  List<String> reservedTimes;
+
+  LatLng getCords() {
+    return LatLng(position.latitude, position.longitude);
+  }
+
+  ParkingSpot(
+      {required this.position,
+      this.isReserved = false,
+      this.reservedTimes = const []});
+}
+
+List<ParkingSpot> parkingSpots = [
+  ParkingSpot(position: LatLng(51.260197, 4.402771)),
+  ParkingSpot(position: LatLng(51.280197, 4.422771)),
+  ParkingSpot(position: LatLng(51.265197, 4.412771)),
+  ParkingSpot(position: LatLng(51.275197, 4.402771)),
+  ParkingSpot(position: LatLng(51.255197, 4.432771)),
+  ParkingSpot(position: LatLng(51.290197, 4.402771)),
+  ParkingSpot(position: LatLng(51.240197, 4.422771)),
 ];
 
 class MapWidget extends StatefulWidget {
@@ -54,24 +69,62 @@ class _MapWidgetState extends State<MapWidget> {
             markers: [
               for (var parkingSpot in parkingSpots)
                 Marker(
-                  point: parkingSpot,
+                  point: parkingSpot.position,
                   width: 50,
                   height: 50,
                   builder: (context) => GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ReservationFormPage(
-                            parkingSpot: parkingSpot,
+                      if (parkingSpot.isReserved) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Parkeerplaats gereserveerd'),
+                            content: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                    'Deze parkeerplaats is al gereserveerd voor de volgende tijdstippen:'),
+                                for (var time in parkingSpot.reservedTimes)
+                                  Text(time),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
                           ),
-                        ),
-                      );
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReservationFormPage(
+                              parkingSpot: parkingSpot,
+                            ),
+                          ),
+                        ).then((value) {
+                          // Update de parkeerplaatsgegevens nadat de reservering is voltooid
+                          if (value != null && value is bool && value) {
+                            parkingSpot.isReserved = true;
+                            // Voeg de gereserveerde tijd toe aan de lijst van gereserveerde tijden maar da WERKTTT NIETTT
+                            parkingSpot.reservedTimes
+                                .add(DateTime.now().toString());
+                          }
+                        });
+                      }
                     },
-                    child: const Icon(
-                      Icons.local_parking,
-                      color: Colors.green,
-                      size: 50.0,
+                    child: Container(
+                      child: Icon(
+                        Icons.local_parking,
+                        color:
+                            parkingSpot.isReserved ? Colors.red : Colors.green,
+                        size: 50.0,
+                      ),
                     ),
                   ),
                 ),

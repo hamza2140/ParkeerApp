@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:project/database_manager.dart';
 import 'package:project/map_homepage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import 'package:project/vehicle.dart';
 
 class ReservationFormPage extends StatefulWidget {
   final ParkingSpot parkingSpot;
@@ -16,6 +18,8 @@ class ReservationFormPage extends StatefulWidget {
 class _ReservationFormPageState extends State<ReservationFormPage> {
   TimeOfDay _reserveTime = TimeOfDay.now();
   TimeOfDay _departureTime = TimeOfDay.now();
+  List<Vehicle> vehicles = [];
+  Vehicle? selectedValue = null;
 
   Future<void> _submitReservation() async {
     try {
@@ -27,7 +31,7 @@ class _ReservationFormPageState extends State<ReservationFormPage> {
           _departureTime.hour, _departureTime.minute);
 
       if (reserveDateTime.isBefore(now) || departureDateTime.isBefore(now)) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
               'Je kunt niet in het verleden reserveren. Selecteer een geldig tijdstip.'),
         ));
@@ -74,7 +78,7 @@ class _ReservationFormPageState extends State<ReservationFormPage> {
       Navigator.pop(context);
     } catch (e) {
       print('Error creating reservation: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Error creating reservation. Please try again.'),
       ));
     }
@@ -107,34 +111,79 @@ class _ReservationFormPageState extends State<ReservationFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reserve Parking Spot'),
+        title: const Text('Reserve Parking Spot'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            FutureBuilder<List<DocumentSnapshot>>(
+              future: DatabaseManager().getDropdownData(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  print(snapshot.data?.length);
+                  // Data has been successfully fetched
+                  List<DocumentSnapshot> data = snapshot.data!;
+                  // Extract the relevant values from the fetched data (e.g., document fields)
+                  if (vehicles.isEmpty) {
+                    for (var element in data) {
+                      vehicles.add(Vehicle(
+                          model: element.get("model"),
+                          brand: element.get("brand"),
+                          id: int.parse(element.id)));
+                      print(element.data());
+                    }
+                  }
+                  // Set an initial value for the dropdown (optional)
+                  print(selectedValue?.brand);
+                  return DropdownButton<Vehicle>(
+                    value: selectedValue,
+                    items: vehicles.map((Vehicle v) {
+                      return DropdownMenuItem<Vehicle>(
+                        value: v,
+                        child: Text("${v.brand} - ${v.model}"),
+                      );
+                    }).toList(),
+                    onChanged: (Vehicle? newValue) {
+                      // Handle the selection of a dropdown item
+                      setState(() {
+                        print(selectedValue);
+                        print(newValue);
+                        selectedValue = newValue;
+                      });
+                    },
+                  );
+                }
+              },
+            ),
             Text(
               'Parking Spot at ${widget.parkingSpot.position}',
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () => _showTimePicker(context, true),
               child: Text(
                 'Reserve Time: ${_reserveTime.format(context)}',
               ),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () => _showTimePicker(context, false),
               child: Text(
                 'Departure Time: ${_departureTime.format(context)}',
               ),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: _submitReservation,
-              child: Text('Reserve Parking Spot'),
+              child: const Text('Reserve Parking Spot'),
             ),
           ],
         ),

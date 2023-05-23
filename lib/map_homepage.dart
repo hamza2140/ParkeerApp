@@ -4,6 +4,9 @@ import 'package:latlong2/latlong.dart';
 import 'package:project/vehicles.dart';
 import 'forms/reservation_form.dart';
 import 'bottom_navbar.dart';
+import 'database_manager.dart';
+import 'forms/login_page.dart';
+import 'forms/parking_lot.dart';
 
 class ParkingSpot {
   LatLng position;
@@ -46,7 +49,7 @@ class _MapWidgetState extends State<MapWidget> {
       if (index == 1) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ShowVehicles()),
+          MaterialPageRoute(builder: (context) => const ShowVehicles()),
         );
       }
     });
@@ -55,6 +58,21 @@ class _MapWidgetState extends State<MapWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Map'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => {
+              DatabaseManager().logout(),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              )
+            },
+          )
+        ],
+      ),
       body: FlutterMap(
         options: MapOptions(
           center: LatLng(51.260197, 4.402771),
@@ -78,12 +96,12 @@ class _MapWidgetState extends State<MapWidget> {
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title: Text('Parkeerplaats gereserveerd'),
+                            title: const Text('Parkeerplaats gereserveerd'),
                             content: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
+                                const Text(
                                     'Deze parkeerplaats is al gereserveerd voor de volgende tijdstippen:'),
                                 for (var time in parkingSpot.reservedTimes)
                                   Text(time),
@@ -94,7 +112,7 @@ class _MapWidgetState extends State<MapWidget> {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('OK'),
+                                child: const Text('OK'),
                               ),
                             ],
                           ),
@@ -118,19 +136,26 @@ class _MapWidgetState extends State<MapWidget> {
                         });
                       }
                     },
-                    child: Container(
-                      child: Icon(
-                        Icons.local_parking,
-                        color:
-                            parkingSpot.isReserved ? Colors.red : Colors.green,
-                        size: 50.0,
-                      ),
+                    child: Icon(
+                      Icons.local_parking,
+                      color: parkingSpot.isReserved ? Colors.red : Colors.green,
+                      size: 50.0,
                     ),
                   ),
                 ),
             ],
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ParkingLot()),
+          );
+        },
+        tooltip: 'Voeg parkeerplaats toe',
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedIndex,

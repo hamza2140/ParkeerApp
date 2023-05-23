@@ -53,7 +53,7 @@ class _ShowVehiclesState extends State<ShowVehicles> {
               DatabaseManager().logout(),
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => const LoginPage()),
               )
             },
           )
@@ -79,7 +79,7 @@ class _ShowVehiclesState extends State<ShowVehicles> {
             itemBuilder: (context, index) {
               return Card(
                 elevation:
-                    4, // this property is used to add elevation to the Card and create a shadow
+                    6, // this property is used to add elevation to the Card and create a shadow
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -100,6 +100,13 @@ class _ShowVehiclesState extends State<ShowVehicles> {
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Icon(Icons.delete),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {},
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(Icons.edit),
                           ),
                         ),
                       ],

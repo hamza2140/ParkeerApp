@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project/database_manager.dart';
 import 'package:project/loading_screen.dart';
-import 'package:project/vehicles.dart';
 import 'register_page.dart';
 
 //login form

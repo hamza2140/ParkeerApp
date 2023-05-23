@@ -61,4 +61,17 @@ class DatabaseManager {
         .doc("${index}")
         .delete();
   }
+
+  Future<List<QueryDocumentSnapshot>> getDropdownData() async {
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection("vehicles")
+        .get();
+    return snapshot.docs;
+  }
+
+  Future<void> addParking(GeoPoint gp) async {
+    _firestore.collection("parkingspots").add({"location": gp});
+  }
 }

@@ -72,6 +72,6 @@ class DatabaseManager {
   }
 
   Future<void> addParking(GeoPoint gp) async {
-    _firestore.collection("parkingspots").add({"location": gp});
+    _firestore.collection("parkingspots").add({"Locatie": gp});
   }
 }

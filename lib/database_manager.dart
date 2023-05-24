@@ -74,4 +74,19 @@ class DatabaseManager {
   Future<void> addParking(GeoPoint gp) async {
     _firestore.collection("parkingspots").add({"Locatie": gp});
   }
+
+  Future<void> updateVehicle(String brand, String model, int index) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection("vehicles")
+          .doc("$index")
+          .update({'brand': brand, 'model': model});
+      print('Vehicle updated successfully.');
+      print(brand);
+    } catch (e) {
+      print('Error updating vehicle: $e');
+    }
+  }
 }

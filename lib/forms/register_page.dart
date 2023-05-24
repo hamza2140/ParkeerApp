@@ -15,6 +15,8 @@ class _RegisterPageState extends State<RegisterPage> {
   String _password = '';
   String _name = '';
 
+  String? errorMessage;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Naam'),
                 validator: (value) {
-                  if (value == "") {
+                  if (value == '') {
                     return 'Schrijf je naam';
                   }
                   return null;
@@ -44,8 +46,8 @@ class _RegisterPageState extends State<RegisterPage> {
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
-                  if (value == "") {
-                    return 'Schijf je email';
+                  if (value == '') {
+                    return 'Schrijf je email';
                   }
                   return null;
                 },
@@ -59,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Wachtwoord'),
                 validator: (value) {
-                  if (value == "") {
+                  if (value == '') {
                     return 'Schrijf je wachtwoord';
                   }
                   return null;
@@ -70,7 +72,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   });
                 },
               ),
-              const SizedBox(height: 20),
+              if (errorMessage != null)
+                Text(
+                  errorMessage!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -92,12 +99,25 @@ class _RegisterPageState extends State<RegisterPage> {
       if (context.mounted) _showSuccessAlert(context);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        setState(() {
+          errorMessage = 'Het wachtwoord is te zwak.';
+        });
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        setState(() {
+          errorMessage = 'Een account voor dat email bestaat al.';
+        });
+      } else if (e.code == 'invalid-email') {
+        setState(() {
+          errorMessage = "U heeft geen geldige email ingegeven";
+        });
       }
+      setState(() {
+        errorMessage = e.toString();
+      });
     } catch (e) {
-      print(e);
+      setState(() {
+        errorMessage = e.toString();
+      });
     }
   }
 

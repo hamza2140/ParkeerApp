@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project/database_manager.dart';
+import 'package:project/editable_card.dart';
 import 'package:project/forms/login_page.dart';
 import 'package:project/forms/vehicles_form.dart';
 import 'package:project/map_homepage.dart';
@@ -77,42 +78,10 @@ class _ShowVehiclesState extends State<ShowVehicles> {
           return ListView.builder(
             itemCount: documents.length,
             itemBuilder: (context, index) {
-              return Card(
-                elevation:
-                    6, // this property is used to add elevation to the Card and create a shadow
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    // Add your card content here
-                    ListTile(
-                        title: Text("Merk: ${documents[index]['brand']}"),
-                        subtitle: Text("Model: ${documents[index]['model']}")),
-                    // Add delete button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            await DatabaseManager().deleteDoc(index);
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(Icons.delete),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () {},
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(Icons.edit),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              return EditableCard(
+                brand: documents[index]['brand'],
+                model: documents[index]['model'],
+                index: index,
               );
             },
           );
